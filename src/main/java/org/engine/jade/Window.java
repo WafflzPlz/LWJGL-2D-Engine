@@ -15,7 +15,10 @@ import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
@@ -83,6 +86,11 @@ public class Window {
         if (this.glfwWindow == NULL) {
             throw new IllegalStateException("Failed to create the GLFW window.");
         }
+
+        // Set Mouse Callbacks
+        glfwSetCursorPosCallback(this.glfwWindow, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(this.glfwWindow, MouseListener::mouseButtonCallback);
+        glfwSetScrollCallback(this.glfwWindow, MouseListener::mouseScrollCallback);
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(this.glfwWindow);
