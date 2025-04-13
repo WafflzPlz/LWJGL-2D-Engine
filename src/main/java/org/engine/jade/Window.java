@@ -1,12 +1,12 @@
 package org.engine.jade;
 
+import org.engine.util.Time;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
@@ -38,9 +38,10 @@ public class Window {
     private String title;
     private long glfwWindow;
 
-    private long r, g, b, a;
+    public long r, g, b, a;
 
     private static Window window;
+    private static Scene currentScene;
 
     private Window() {
         this.height = 1080;
@@ -50,6 +51,16 @@ public class Window {
         b = 1;
         g = 1;
         a = 1;
+    }
+
+    public static void changeScene(int newScene) {
+        currentScene = switch (newScene) {
+            case 0 -> new LevelEditorScene();
+            case 1 -> new LevelScene();
+            default -> throw new IllegalStateException("Scene with index " + newScene + " does not exist.");
+        };
+
+
     }
 
     public static Window get() {
@@ -115,9 +126,16 @@ public class Window {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+
+        Window.changeScene(0);
     }
 
     public void loop() {
+
+        float beginTime = Time.getTime();
+        float endTime;
+        float dt = -1.0f;
+
         while(!glfwWindowShouldClose(this.glfwWindow)) {
             // Poll events
             glfwPollEvents();
@@ -125,11 +143,16 @@ public class Window {
             glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
-                // do something
+            if (dt >= 0) {
+                currentScene.update(dt);
             }
 
             glfwSwapBuffers(this.glfwWindow);
+
+            // Time management
+            endTime = Time.getTime();
+            dt = endTime - beginTime;
+            beginTime = endTime;
         }
     }
 }
