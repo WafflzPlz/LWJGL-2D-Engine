@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
@@ -17,6 +18,7 @@ import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
@@ -36,12 +38,18 @@ public class Window {
     private String title;
     private long glfwWindow;
 
+    private long r, g, b, a;
+
     private static Window window;
 
     private Window() {
         this.height = 1080;
         this.width = 1920;
         this.title = "Mario";
+        r = 1;
+        b = 1;
+        g = 1;
+        a = 1;
     }
 
     public static Window get() {
@@ -87,10 +95,11 @@ public class Window {
             throw new IllegalStateException("Failed to create the GLFW window.");
         }
 
-        // Set Mouse Callbacks
+        // Set Mouse & Key Callbacks
         glfwSetCursorPosCallback(this.glfwWindow, MouseListener::mousePosCallback);
         glfwSetMouseButtonCallback(this.glfwWindow, MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(this.glfwWindow, MouseListener::mouseScrollCallback);
+        glfwSetKeyCallback(this.glfwWindow, KeyListener::keyCallback);
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(this.glfwWindow);
@@ -113,8 +122,12 @@ public class Window {
             // Poll events
             glfwPollEvents();
 
-            glClearColor(1.0f, 0f, 0f, 1.0f);
+            glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+                // do something
+            }
 
             glfwSwapBuffers(this.glfwWindow);
         }
