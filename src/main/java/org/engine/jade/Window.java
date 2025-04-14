@@ -59,8 +59,7 @@ public class Window {
             case 1 -> new LevelScene();
             default -> throw new IllegalStateException("Scene with index " + newScene + " does not exist.");
         };
-
-
+        currentScene.init();
     }
 
     public static Window get() {
@@ -77,6 +76,10 @@ public class Window {
         init();
         loop();
 
+        shutdown();
+    }
+
+    public void shutdown() {
         // Free memory
         glfwFreeCallbacks(this.glfwWindow);
         glfwDestroyWindow(this.glfwWindow);
